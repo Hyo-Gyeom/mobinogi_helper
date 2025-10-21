@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마비노기 모바일 레시피 도우미</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 저장 알림 오버레이 -->
+    <div class="save-overlay" id="save-overlay">
+        <div class="save-message">✅ 저장하였습니다</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1><img src="logo.png" alt="마비노기 로고" style="height: 50px; vertical-align: middle; margin-right: 15px;">마비노기 모바일 레시피 도우미</h1>            
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showPage('ingredient-input')">재료 입력</button>
+            <button class="nav-tab" onclick="showPage('makeable-recipes')">가능한 레시피</button>
+            <button class="nav-tab" onclick="showPage('recipe-input')">레시피 입력</button>
+            <button class="nav-tab" onclick="showPage('recipe-list')">전체 레시피</button>
+        </div>
+
+        <!-- 재료 입력 페이지 -->
+        <div id="ingredient-input" class="page active">
+            <h2>📦 보유 재료 관리</h2>            
+            
+            <div style="text-align: right; margin-bottom: 20px;">
+                <button class="btn" onclick="saveCurrentIngredients()">현재 재료 저장</button>
+            </div>
+            
+            <div id="ingredient-status"></div>
+            
+            <div class="ingredient-list" id="ingredient-list">
+                <!-- 동적으로 생성되는 재료 목록 -->
+            </div>
+            
+            <div style="margin-top: 30px; text-align: right;">
+                <button class="btn" onclick="searchRecipes()">🔍 만들 수 있는 레시피 찾기</button>
+            </div>
+        </div>
+
+        <!-- 가능한 레시피 페이지 -->
+        <div id="makeable-recipes" class="page">
+            <h2>✅ 가공 및 제작 가능한 레시피</h2>
+            
+            <div style="margin-bottom: 20px; text-align: right;">
+                <select id="makeable-category-filter" onchange="filterMakeableRecipesByCategory()" style="padding: 10px 20px; border: 2px solid #cbd5e0; border-radius: 8px; font-size: 1rem; min-width: 200px; background: #f7fafc;">
+                    <option value="전체">전체</option>
+                </select>
+            </div>
+            
+            <div id="makeable-recipes-status"></div>
+            <div id="makeable-recipes-results" class="search-results">
+                <!-- 가능한 레시피 리스트가 여기에 표시됩니다 -->
+            </div>
+        </div>
+
+        <!-- 전체 레시피 리스트 페이지 -->
+        <div id="recipe-list" class="page">
+            <h2>📋 추가된 레시피 리스트</h2>
+            
+            <div style="margin-bottom: 20px; text-align: right;">
+                <select id="category-filter" onchange="filterRecipesByCategory()" style="padding: 10px 20px; border: 2px solid #cbd5e0; border-radius: 8px; font-size: 1rem; min-width: 200px; background: #f7fafc;">
+                    <option value="전체">전체</option>
+                </select>
+            </div>
+            
+            <div id="recipe-list-status"></div>
+            <div id="recipe-list-results" class="search-results">
+                <!-- 레시피 리스트가 여기에 표시됩니다 -->
+            </div>
+        </div>
+
+        <!-- 레시피 입력 페이지 -->
+        <div id="recipe-input" class="page">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                    <h2 style="margin: 0;">📝 새 레시피 입력</h2>                    
+                </div>
+                <button class="btn btn-secondary" onclick="clearRecipeForm()" style="padding: 8px 16px; font-size: 0.9rem;">초기화</button>
+            </div>
+            
+            <form class="recipe-form" onsubmit="addRecipe(event)">
+                <div class="form-group full-width">
+                    <label for="recipe-name">레시피 이름</label>
+                    <input type="text" id="recipe-name" placeholder="예: 바나나 빵" required>
+                </div>
+                
+                <div class="form-group full-width">
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: end;">
+                        <div>
+                            <label for="recipe-category">카테고리</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="text" id="recipe-category-custom" placeholder="카테고리를 직접 입력하세요" style="flex: 1;" onchange="updateCategoryValue()">
+                                <select id="recipe-category-select" onchange="handleCategoryChange()" style="flex: 1;">
+                                    <option value="">직접입력</option>
+                                    <option value="빵">빵</option>
+                                    <option value="요리">요리</option>
+                                    <option value="음료">음료</option>
+                                    <option value="디저트">디저트</option>
+                                </select>
+                            </div>
+                            <input type="hidden" id="recipe-category" required>
+                        </div>
+                        <div>
+                            <label for="recipe-quantity">만들어지는 수량</label>
+                            <input type="number" id="recipe-quantity" placeholder="수량" min="1" value="1" required>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <div class="form-group full-width">
+                    <label for="recipe-description">설명</label>
+                    <textarea id="recipe-description" placeholder="레시피에 대한 간단한 설명을 입력하세요" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group full-width">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <label style="margin: 0;">필요한 재료</label>
+                        <button type="button" class="btn" onclick="addIngredientRow()" style="padding: 8px 16px; font-size: 0.9rem;">재료 칸 추가</button>
+                    </div>
+                    <div id="ingredient-rows">
+                        <!-- 동적으로 생성되는 재료 입력 칸들 -->
+                        <div class="ingredient-input-group" style="margin-bottom: 10px;">
+                            <input type="text" placeholder="재료 이름" style="flex: 2;" onchange="updateRecipeIngredientsList()">
+                            <input type="number" placeholder="수량" min="1" value="1" style="flex: 1;" onchange="updateRecipeIngredientsList()">
+                            <select style="flex: 1.5;" onchange="updateRecipeIngredientsList()">
+                                <option value="false">가공불필요</option>
+                                <option value="true">가공필요</option>
+                            </select>
+                            <button type="button" class="btn btn-danger" onclick="removeIngredientRow(this)" style="padding: 8px 12px; font-size: 0.8rem;">삭제</button>
+                        </div>
+                    </div>
+                    <div class="ingredient-list-display" id="recipe-ingredients-list">
+                        <h4>추가된 재료</h4>
+                        <div id="recipe-ingredients-tags"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group full-width" style="text-align: right;">
+                    <button type="submit" class="btn">레시피 저장</button>
+                </div>
+            </form>
+            
+            <div id="recipe-status"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

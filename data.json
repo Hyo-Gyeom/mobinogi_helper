@@ -1,0 +1,154 @@
+{
+  "ingredients": [
+    {
+      "name": "블러디 허브",
+      "quantity": 50
+    },
+    {
+      "name": "새록 버섯",
+      "quantity": 2
+    },
+    {
+      "name": "네잎클로버",
+      "quantity": 50
+    },
+    {
+      "name": "쑥쑥 버섯 진액",
+      "quantity": 20
+    },
+    {
+      "name": "동전무당벌레",
+      "quantity": 10
+    },
+    {
+      "name": "연금술 부스러기",
+      "quantity": 9000
+    },
+    {
+      "name": "끈기 풀",
+      "quantity": 20
+    },
+    {
+      "name": "흰꽃나비",
+      "quantity": 20
+    },
+    {
+      "name": "깔끔 버섯 진액",
+      "quantity": 4
+    },
+    {
+      "name": "생명의 마나석",
+      "quantity": 20
+    }
+  ],
+  "recipes": [
+    {
+      "id": 1,
+      "name": "회복물약",
+      "category": "회복",
+      "description": "체력을 260회복하는 물약",
+      "ingredients": [
+        {
+          "name": "새록 버섯",
+          "quantity": 2,
+          "processing": false
+        },
+        {
+          "name": "블러디 허브",
+          "quantity": 2,
+          "processing": false
+        }
+      ],
+      "createdAt": "2025-10-21T12:30:33.565Z",
+      "quantity": 5,
+      "updatedAt": "2025-10-21T13:47:00.517Z"
+    },
+    {
+      "id": 2,
+      "name": "치명타 비약",
+      "category": "강화",
+      "quantity": 3,
+      "description": "일시적으로 치명타 확률을 50%만큼 강화하는 물약을 만든다",
+      "ingredients": [
+        {
+          "name": "네잎클로버",
+          "quantity": 10,
+          "processing": false
+        },
+        {
+          "name": "쑥쑥 버섯 진액",
+          "quantity": 3,
+          "processing": true
+        },
+        {
+          "name": "동전무당벌레",
+          "quantity": 6,
+          "processing": false
+        },
+        {
+          "name": "연금술 부스러기",
+          "quantity": 10,
+          "processing": false
+        }
+      ],
+      "createdAt": "2025-10-21T14:01:06.661Z"
+    },
+    {
+      "id": 3,
+      "name": "궁극기 비약",
+      "category": "강화",
+      "quantity": 3,
+      "description": "궁극기 게이지를 50%만큼 획득",
+      "ingredients": [
+        {
+          "name": "끈기 풀",
+          "quantity": 10,
+          "processing": false
+        },
+        {
+          "name": "쑥쑥 버섯 진액",
+          "quantity": 3,
+          "processing": false
+        },
+        {
+          "name": "흰꽃나비",
+          "quantity": 6,
+          "processing": true
+        },
+        {
+          "name": "연금술 부스러기",
+          "quantity": 10,
+          "processing": false
+        }
+      ],
+      "createdAt": "2025-10-21T14:08:01.613Z"
+    },
+    {
+      "id": 4,
+      "name": "뛰어난 회복 물약",
+      "category": "회복",
+      "quantity": 5,
+      "description": "체력을 13300만큼 회복하는 물약",
+      "ingredients": [
+        {
+          "name": "블러디허브",
+          "quantity": 16,
+          "processing": false
+        },
+        {
+          "name": "깔끔 버섯 진액",
+          "quantity": 5,
+          "processing": true
+        },
+        {
+          "name": "생명의 마나석",
+          "quantity": 2,
+          "processing": false
+        }
+      ],
+      "createdAt": "2025-10-21T14:09:16.901Z"
+    }
+  ],
+  "lastUpdated": "2025-10-21T14:57:53.620Z",
+  "version": "1.0"
+}
