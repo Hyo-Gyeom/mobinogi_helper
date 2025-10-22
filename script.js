@@ -252,17 +252,28 @@ function displayMakeableRecipes(recipes) {
             `${ing.name} ${ing.quantity}개${ing.processing ? ' (가공필요)' : ''}`
         ).join(', ');
         
+        // 제작 가능 수량 계산
+        let maxMakeable = Infinity;
+        recipe.ingredients.forEach(recipeIng => {
+            const availableIng = currentIngredients.find(ing => 
+                ing.name.replace(/\s/g, '') === recipeIng.name.replace(/\s/g, '')
+            );
+            if (availableIng) {
+                const canMake = Math.floor(availableIng.quantity / recipeIng.quantity);
+                maxMakeable = Math.min(maxMakeable, canMake);
+            }
+        });
+        
         card.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
-                <div style="display: flex; align-items: flex-end; gap: 10px; flex: 1;">
-                    <h3 style="margin: 0; font-size: 1.6rem; line-height: 1.2;">${recipe.name}</h3>
-                    <span style="background: #667eea; color: white; padding: 4px 10px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 2px;">${recipe.category}</span>
-                </div>
+            <div style="display: flex; align-items: flex-end; gap: 10px; height: 39px; margin-bottom: 10px;">
+                <h3 style="margin: 0; font-size: 1.6rem; line-height: 1.2;">${recipe.name}</h3>
+                <span style="background: #667eea; color: white; padding: 4px 10px; border-radius: 10px; font-size: 0.85rem;">${recipe.category}</span>
             </div>
-            ${recipe.quantity ? `<div style="margin-bottom: 10px;"><span style="background: #38a169; color: white; padding: 4px 10px; border-radius: 10px; font-size: 0.85rem;">수량: ${recipe.quantity}</span></div>` : ''}
-            ${recipe.description ? `<p style="color: #718096; font-size: 0.9rem; margin-bottom: 10px;">${recipe.description}</p>` : ''}
+            ${recipe.description ? `<p style="color: #4a5568; font-size: 0.9rem; margin-bottom: 5px;">${recipe.description}</p>` : ''}
+            ${recipe.quantity ? `<p style="color: #4a5568; font-size: 0.9rem; margin-bottom: 10px;">만들어지는 수량: ${recipe.quantity} | <span style="color: #38a169; font-weight: 600;">제작 가능: ${maxMakeable}회 (최종 ${maxMakeable * recipe.quantity}개)</span></p>` : `<p style="color: #4a5568; font-size: 0.9rem; margin-bottom: 10px;"><span style="color: #38a169; font-weight: 600;">제작 가능: ${maxMakeable}회</span></p>`}
             <div class="recipe-ingredients">
-                <strong>필요 재료:</strong> ${ingredientsText}
+                <strong style="display: block; margin-bottom: 5px;">필요 재료</strong>
+                <div style="color: #4a5568; font-size: 0.9rem;">${ingredientsText}</div>
             </div>
         `;
         
@@ -405,20 +416,21 @@ function displayRecipeList(recipes) {
         ).join(', ');
         
         card.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
-                <div style="display: flex; align-items: flex-end; gap: 10px; flex: 1;">
+            <div style="margin-bottom: 10px;">
+                <div style="display: flex; align-items: flex-end; gap: 10px; height: 39px;">
                     <h3 style="margin: 0; font-size: 1.6rem; line-height: 1.2;">${recipe.name}</h3>
-                    <span style="background: #667eea; color: white; padding: 4px 10px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 2px;">${recipe.category}</span>
+                    <span style="background: #667eea; color: white; padding: 4px 10px; border-radius: 10px; font-size: 0.85rem;">${recipe.category}</span>
                 </div>
-                <div style="display: flex; gap: 5px;">
+                <div style="display: flex; gap: 5px; justify-content: flex-end; height: 39px; margin-top: -39px;">
                     <button class="btn" onclick="editRecipe(${recipe.id})" style="padding: 5px 10px; font-size: 0.8rem; background: #38a169;">수정</button>
                     <button class="btn btn-danger" onclick="deleteRecipe(${recipe.id})" style="padding: 5px 10px; font-size: 0.8rem;">삭제</button>
                 </div>
             </div>
-            ${recipe.quantity ? `<div style="margin-bottom: 10px;"><span style="background: #38a169; color: white; padding: 4px 10px; border-radius: 10px; font-size: 0.85rem;">수량: ${recipe.quantity}</span></div>` : ''}
-            ${recipe.description ? `<p style="color: #718096; font-size: 0.9rem; margin-bottom: 10px;">${recipe.description}</p>` : ''}
+            ${recipe.description ? `<p style="color: #4a5568; font-size: 0.9rem; margin-bottom: 5px;">${recipe.description}</p>` : ''}
+            ${recipe.quantity ? `<p style="color: #4a5568; font-size: 0.9rem; margin-bottom: 10px;">만들어지는 수량: ${recipe.quantity}</p>` : ''}
             <div class="recipe-ingredients">
-                <strong>필요 재료:</strong> ${ingredientsText}
+                <strong style="display: block; margin-bottom: 5px;">필요 재료</strong>
+                <div style="color: #4a5568; font-size: 0.9rem;">${ingredientsText}</div>
             </div>
         `;
         
@@ -745,38 +757,6 @@ function downloadDataAsFile(data) {
     URL.revokeObjectURL(url);
 }
 
-function loadRecipesFromStorage() {
-    // 페이지 로드 시 샘플 데이터로 초기화
-    if (recipes.length === 0) {
-        recipes = [
-            {
-                id: 1,
-                name: "바나나 빵",
-                category: "빵",
-                description: "달콤하고 부드러운 바나나 빵",
-                ingredients: [
-                    { name: "바나나", quantity: 2 },
-                    { name: "밀가루", quantity: 1 },
-                    { name: "달걀", quantity: 1 },
-                    { name: "우유", quantity: 1 }
-                ],
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: 2,
-                name: "치킨 스테이크",
-                category: "요리",
-                description: "부드럽고 맛있는 치킨 스테이크",
-                ingredients: [
-                    { name: "닭고기", quantity: 1 },
-                    { name: "버터", quantity: 1 },
-                    { name: "소금", quantity: 1 }
-                ],
-                createdAt: new Date().toISOString()
-            }
-        ];
-    }
-}
 
 // 상태 메시지 표시 (중앙 오버레이 사용)
 function showStatus(elementId, message, type) {
@@ -856,3 +836,4 @@ window.onload = function() {
     // JSON 파일에서 로드 시도
     loadDataFromFile();
 };
+
